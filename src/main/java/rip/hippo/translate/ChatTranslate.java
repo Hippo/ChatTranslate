@@ -1,52 +1,33 @@
 package rip.hippo.translate;
 
-import net.md_5.bungee.api.ChatColor;
+import rip.hippo.translate.translator.Translator;
+import rip.hippo.translate.translator.impl.LegacyTranslator;
+import rip.hippo.translate.translator.impl.ModernTranslator;
+import rip.hippo.version.BukkitVersion;
 
 /**
  * @author Hippo
  */
 public final class ChatTranslate {
 
+  private static Translator translator;
   private ChatTranslate() {
     throw new IllegalStateException();
   }
 
   public static String translate(String string) {
-    StringBuilder stringBuilder = new StringBuilder();
+    return getTranslator().translate(string);
+  }
 
-    int i = 0;
-    int end = string.length() - 1;
-    while (i < string.length()) {
-      char c = string.charAt(i);
-
-      if (c == '&' && i != end) {
-        char next = string.charAt(++i);
-        if (next == '#') {
-          StringBuilder hex = new StringBuilder();
-          hex.append(next);
-          try {
-            for (int j = 0; j < 6; j++) {
-              hex.append(string.charAt(++i));
-            }
-          } catch (IndexOutOfBoundsException e) {
-            throw new RuntimeException("Invalid hex code, expected 6 characters, got " + hex.length(), e);
-          }
-
-          stringBuilder.append(ChatColor.of(hex.toString()));
-        } else {
-          ChatColor color = ChatColor.getByChar(next);
-          if (color == null) {
-            stringBuilder.append(c).append(next);
-          } else {
-            stringBuilder.append(color);
-          }
-        }
+  private static Translator getTranslator() {
+    if (translator == null) {
+      BukkitVersion current = BukkitVersion.getCurrent();
+      if (current.isGreaterThanOrEqual(new BukkitVersion(1, 16))) {
+        translator = new ModernTranslator();
       } else {
-        stringBuilder.append(c);
+        translator = new LegacyTranslator();
       }
-      i++;
     }
-
-    return stringBuilder.toString();
+    return translator;
   }
 }
