@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "rip.hippo"
-version = "1.2.0"
+version = "1.2.1"
 
 repositories {
     mavenCentral()
@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT")
     implementation("rip.hippo:BukkitVersion:1.0.0")
 }
 
